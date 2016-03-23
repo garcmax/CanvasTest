@@ -42,7 +42,7 @@ window.onload = function()
     context.fillRect(150,200,200,100);*/
     
    //courbes
-   var modCurvePoints1;
+   /*var modCurvePoints1;
    var modCurvePoints2;
    var bezierPoints = {
        x1:100,
@@ -51,7 +51,7 @@ window.onload = function()
        y2:25
    }
    var dragging = 0;
-   drawCurves(bezierPoints);
+   drawCurvesRealTime(bezierPoints);
    canvas.addEventListener("mousedown", mouseDownListener, false);
    
    function mouseDownListener(e) {
@@ -85,7 +85,7 @@ window.onload = function()
             bezierPoints.x2 = mouseLoc.x;
             bezierPoints.y2 = mouseLoc.y;
         }
-        drawCurves(bezierPoints);
+        drawCurvesRealTime(bezierPoints);
    }
    
    function mouseUpListener(e) {
@@ -96,8 +96,65 @@ window.onload = function()
        }
        canvas.addEventListener("mousedown", mouseDownListener, false);
    }
- 
+   
+   function drawCurvesRealTime(bezierPoints) {
+        context.clearRect(0, 0, canvas.width, canvas.height);   
+        drawCurves(25,100,bezierPoints.x1,bezierPoints.y1,bezierPoints.x2,bezierPoints.y2,325, 125);        
+        drawLine(25,100,bezierPoints.x1,bezierPoints.y1);
+        drawLine(325,125,bezierPoints.x2,bezierPoints.y2);
+        modCurvePoints1 = {x:bezierPoints.x1-2.5,y:bezierPoints.y1-2.5,long:5,larg:5};
+        modCurvePoints2 = {x:bezierPoints.x2-2.5,y:bezierPoints.y2-2.5,long:5,larg:5};
+        drawRectangle(bezierPoints.x1-2.5,bezierPoints.y1-2.5,5,5);
+        drawRectangle(bezierPoints.x2-2.5,bezierPoints.y2-2.5,5,5);
+    }*/
     
+    //Arc
+    /*context.beginPath();
+    context.arc(100,100,50,0,1*Math.PI, true);
+    context.stroke();*/
+    
+    //Text
+    /*context.font = "20px calibri";
+    context.fillText("HelloWorld", 200,200);
+    context.font = " italic bold 20px Georgia, serif ";
+    context.fillText("HelloWorld", 200,250);*/
+    
+    //Transformation
+    /*context.fillStyle = "red";
+    drawRectangle(100,100,200,100);    
+    context.fillStyle = "yellow";
+    context.transform(1,0.5,-0.5,1,30,10);    
+    drawRectangle(100,100,200,100);
+    context.fillStyle = "blue";
+    context.transform(1,0.5,-0.5,1,30,10);
+    drawRectangle(200,100,200,100);*/
+    
+    //Translation
+    /*drawGrid();
+    context.fillStyle = "red";
+    drawRectangle(100,100,200,100);    
+    context.fillStyle = "yellow";
+    context.translate(100,100);    
+    drawRectangle(100,100,200,100);*/
+    
+    //Rotation
+    drawGrid();    
+    context.save();    
+    context.fillStyle = "yellow";
+    context.rotate(20*Math.PI/180);
+    drawRectangle(100,100,200,100);
+    context.restore();
+    context.fillStyle = "red";
+    drawRectangle(100,100,200,100);
+    
+    
+    
+ 
+    function drawArc(radiusX,radiusY,radius,startAngle,endAngle,ccw) {
+        context.beginPath();
+        context.arc(radiusX,radiusY,radius,startAngle,endAngle,ccw);
+        context.stroke();
+    }
     function drawLine(fromX,fromY,toX,toY) {
         context.beginPath();
         context.moveTo(fromX,fromY);
@@ -125,22 +182,15 @@ window.onload = function()
         context.fillRect(x,y,larg,long)
     }
     
-    function drawCurves(bezierPoints) {
-        context.clearRect(0, 0, canvas.width, canvas.height);   
+    function drawCurves(startX,startY,x1,y1,x2,y2,endX,endY) {
         context.beginPath();       
-        context.moveTo(25,100);
+        context.moveTo(startX,startY);
         context.bezierCurveTo(
-            bezierPoints.x1,bezierPoints.y1,
-            bezierPoints.x2,bezierPoints.y2,
-            325, 125
+            x1,y1,
+            x2,y2,
+            endX, endY
             );
         context.stroke();
-        drawLine(25,100,bezierPoints.x1,bezierPoints.y1);
-        drawLine(325,125,bezierPoints.x2,bezierPoints.y2);
-        modCurvePoints1 = {x:bezierPoints.x1-2.5,y:bezierPoints.y1-2.5,long:5,larg:5};
-        modCurvePoints2 = {x:bezierPoints.x2-2.5,y:bezierPoints.y2-2.5,long:5,larg:5};
-        drawRectangle(bezierPoints.x1-2.5,bezierPoints.y1-2.5,5,5);
-        drawRectangle(bezierPoints.x2-2.5,bezierPoints.y2-2.5,5,5);
     }
     
     function windowToCanvas(canvas, x, y) {
