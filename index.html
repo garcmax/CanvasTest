@@ -42,13 +42,19 @@ window.onload = function()
     context.fillRect(150,200,200,100);*/
     
    //courbes
-   /*var modCurvePoints1;
+   var modCurvePoints1;
    var modCurvePoints2;
+   var modCurvePoints3;
+   var modCurvePoints4;
    var bezierPoints = {
+       startX:25,
+       startY:100,
        x1:100,
        y1:25,
        x2:400,
-       y2:25
+       y2:25,
+       endX:325,
+       endY:125
    }
    var dragging = 0;
    drawCurvesRealTime(bezierPoints);
@@ -66,6 +72,14 @@ window.onload = function()
         (mouseLoc.y >= modCurvePoints2.y && mouseLoc.y <= modCurvePoints2.y + modCurvePoints2.long)) {
             console.log('point 2');
             dragging = 2;
+        } else if ((mouseLoc.x >= modCurvePoints3.x && mouseLoc.x <= modCurvePoints3.x + modCurvePoints3.larg) && 
+        (mouseLoc.y >= modCurvePoints3.y && mouseLoc.y <= modCurvePoints3.y + modCurvePoints3.long)) {
+            console.log('point start');
+            dragging = 3;
+        } else if ((mouseLoc.x >= modCurvePoints4.x && mouseLoc.x <= modCurvePoints4.x + modCurvePoints4.larg) && 
+        (mouseLoc.y >= modCurvePoints4.y && mouseLoc.y <= modCurvePoints4.y + modCurvePoints4.long)) {
+            console.log('point end');
+            dragging = 4;
         }
         if (dragging != 0) {
             canvas.addEventListener("mousemove", mouseMoveListener, false);
@@ -76,15 +90,28 @@ window.onload = function()
    
    function mouseMoveListener(e) {
         mouseLoc = windowToCanvas(canvas, e.clientX, e.clientY);
-        console.log(mouseLoc);
         
-        if (dragging === 1) {
-            bezierPoints.x1 = mouseLoc.x;
-            bezierPoints.y1 = mouseLoc.y;
-        } else {
-            bezierPoints.x2 = mouseLoc.x;
-            bezierPoints.y2 = mouseLoc.y;
-        }
+        switch(dragging) {
+            case 1:
+                bezierPoints.x1 = Math.round(mouseLoc.x / 10) * 10;
+                bezierPoints.y1 = Math.round(mouseLoc.y / 10) * 10;
+                break;
+            case 2:
+                bezierPoints.x2 = mouseLoc.x;
+                bezierPoints.y2 = mouseLoc.y;
+                break;
+            case 3:
+                bezierPoints.startX = mouseLoc.x;
+                bezierPoints.startY = mouseLoc.y;
+                break;
+            case 4:
+                bezierPoints.endX = mouseLoc.x;
+                bezierPoints.endY = mouseLoc.y;
+                break;
+            default:
+                console.log('default');
+        } 
+       
         drawCurvesRealTime(bezierPoints);
    }
    
@@ -99,14 +126,18 @@ window.onload = function()
    
    function drawCurvesRealTime(bezierPoints) {
         context.clearRect(0, 0, canvas.width, canvas.height);   
-        drawCurves(25,100,bezierPoints.x1,bezierPoints.y1,bezierPoints.x2,bezierPoints.y2,325, 125);        
-        drawLine(25,100,bezierPoints.x1,bezierPoints.y1);
-        drawLine(325,125,bezierPoints.x2,bezierPoints.y2);
+        drawCurves(context,bezierPoints.startX,bezierPoints.startY,bezierPoints.x1,bezierPoints.y1,bezierPoints.x2,bezierPoints.y2,bezierPoints.endX, bezierPoints.endY);        
+        drawLine(context,bezierPoints.startX,bezierPoints.startY,bezierPoints.x1,bezierPoints.y1);
+        drawLine(context,bezierPoints.endX,bezierPoints.endY,bezierPoints.x2,bezierPoints.y2);
         modCurvePoints1 = {x:bezierPoints.x1-2.5,y:bezierPoints.y1-2.5,long:5,larg:5};
         modCurvePoints2 = {x:bezierPoints.x2-2.5,y:bezierPoints.y2-2.5,long:5,larg:5};
-        drawRectangle(bezierPoints.x1-2.5,bezierPoints.y1-2.5,5,5);
-        drawRectangle(bezierPoints.x2-2.5,bezierPoints.y2-2.5,5,5);
-    }*/
+        modCurvePoints3 = {x:bezierPoints.startX-2.5,y:bezierPoints.startY-2.5,long:5,larg:5};
+        modCurvePoints4 = {x:bezierPoints.endX-2.5,y:bezierPoints.endY-2.5,long:5,larg:5};
+        drawRectangle(context,bezierPoints.x1-2.5,bezierPoints.y1-2.5,5,5);
+        drawRectangle(context,bezierPoints.x2-2.5,bezierPoints.y2-2.5,5,5);
+        drawRectangle(context,bezierPoints.startX-2.5,bezierPoints.startY-2.5,5,5);
+        drawRectangle(context,bezierPoints.endX-2.5,bezierPoints.endY-2.5,5,5);
+    }
     
     //Arc
     /*context.beginPath();
@@ -137,61 +168,20 @@ window.onload = function()
     context.translate(100,100);    
     drawRectangle(100,100,200,100);*/
     
-    //Rotation
-    drawGrid();    
+    //Rotation && state
+    /*drawGrid(context);    
     context.save();    
     context.fillStyle = "yellow";
     context.rotate(20*Math.PI/180);
-    drawRectangle(100,100,200,100);
+    drawRectangle(context, 100,100,200,100);
     context.restore();
     context.fillStyle = "red";
-    drawRectangle(100,100,200,100);
+    drawRectangle(context, 100,100,200,100);*/
     
     
     
  
-    function drawArc(radiusX,radiusY,radius,startAngle,endAngle,ccw) {
-        context.beginPath();
-        context.arc(radiusX,radiusY,radius,startAngle,endAngle,ccw);
-        context.stroke();
-    }
-    function drawLine(fromX,fromY,toX,toY) {
-        context.beginPath();
-        context.moveTo(fromX,fromY);
-        context.lineTo(toX,toY);
-        context.stroke();
-    }
-    
-    function drawGrid() {
-        for(var i = 0; i < 500; i += 10) {
-            context.beginPath();
-            context.moveTo(i,0);
-            context.lineTo(i,500);
-            context.stroke();
-        }
-    
-        for(var i = 0; i < 500; i += 10) {
-            context.beginPath();
-            context.moveTo(0,i);
-            context.lineTo(500,i);
-            context.stroke();
-        }
-    }
-    
-    function drawRectangle(x,y,larg,long) {
-        context.fillRect(x,y,larg,long)
-    }
-    
-    function drawCurves(startX,startY,x1,y1,x2,y2,endX,endY) {
-        context.beginPath();       
-        context.moveTo(startX,startY);
-        context.bezierCurveTo(
-            x1,y1,
-            x2,y2,
-            endX, endY
-            );
-        context.stroke();
-    }
+   
     
     function windowToCanvas(canvas, x, y) {
         var bbox = canvas.getBoundingClientRect();
@@ -203,6 +193,7 @@ window.onload = function()
     
 }
 </script>
+<script src="shapes.js"></script>
 
 </body>
 </html>
