@@ -1,0 +1,158 @@
+<!DOCTYPE HTML>
+<html>
+<body>
+
+<canvas id="gameCanvas" width="500" height="500" style="border:1px solid black;">
+    Votre navigateur ne supporte pas canvas.
+</canvas>
+
+
+<script type="text/javascript">
+window.onload = function()
+{
+    var canvas = document.getElementById("gameCanvas");
+    if(!canvas)
+    {
+        alert("Impossible de récupérer le canvas");
+        return;
+    }
+    
+    var context = canvas.getContext("2d");
+    if(!context)
+    {
+        alert("Impossible de récupérer le context");
+        return;
+    }
+    
+    //lignes
+    /*context.beginPath();
+    context.moveTo(100,200);
+    context.lineTo(200,200);
+    context.stroke();
+    context.fillText("moveTo(x,y)",80,190);
+    context.fillText("lineTo(x,y)",180,190);*/
+    
+    //rectangle
+    /*drawGrid();
+    context.font = "30px calibri";
+    context.fillText("150",105,220);
+    context.fillText("200",150,200);
+    context.fillText("200*100",200,250);
+    context.fillStyle = "rgba(100,220,220,0.75)";
+    context.fillRect(150,200,200,100);*/
+    
+   //courbes
+   var modCurvePoints1;
+   var modCurvePoints2;
+   var bezierPoints = {
+       x1:100,
+       y1:25,
+       x2:400,
+       y2:25
+   }
+   var dragging = 0;
+   drawCurves(bezierPoints);
+   canvas.addEventListener("mousedown", mouseDownListener, false);
+   
+   function mouseDownListener(e) {
+        mouseLoc = windowToCanvas(canvas, e.clientX, e.clientY);
+        
+       
+       if ((mouseLoc.x >= modCurvePoints1.x && mouseLoc.x <= modCurvePoints1.x + modCurvePoints1.larg) && 
+        (mouseLoc.y >= modCurvePoints1.y && mouseLoc.y <= modCurvePoints1.y + modCurvePoints1.long)) {
+            console.log('point 1');
+            dragging = 1;
+        } else if ((mouseLoc.x >= modCurvePoints2.x && mouseLoc.x <= modCurvePoints2.x + modCurvePoints2.larg) && 
+        (mouseLoc.y >= modCurvePoints2.y && mouseLoc.y <= modCurvePoints2.y + modCurvePoints2.long)) {
+            console.log('point 2');
+            dragging = 2;
+        }
+        if (dragging != 0) {
+            canvas.addEventListener("mousemove", mouseMoveListener, false);
+        }
+        canvas.removeEventListener("mousedown", mouseDownListener, false);
+        canvas.addEventListener("mouseup", mouseUpListener, false);
+   }
+   
+   function mouseMoveListener(e) {
+        mouseLoc = windowToCanvas(canvas, e.clientX, e.clientY);
+        console.log(mouseLoc);
+        
+        if (dragging === 1) {
+            bezierPoints.x1 = mouseLoc.x;
+            bezierPoints.y1 = mouseLoc.y;
+        } else {
+            bezierPoints.x2 = mouseLoc.x;
+            bezierPoints.y2 = mouseLoc.y;
+        }
+        drawCurves(bezierPoints);
+   }
+   
+   function mouseUpListener(e) {
+       canvas.removeEventListener("mouseUp", mouseUpListener, false);
+       if (dragging != 0) {
+           dragging = 0;
+           canvas.removeEventListener("mousemove", mouseMoveListener, false);
+       }
+       canvas.addEventListener("mousedown", mouseDownListener, false);
+   }
+ 
+    
+    function drawLine(fromX,fromY,toX,toY) {
+        context.beginPath();
+        context.moveTo(fromX,fromY);
+        context.lineTo(toX,toY);
+        context.stroke();
+    }
+    
+    function drawGrid() {
+        for(var i = 0; i < 500; i += 10) {
+            context.beginPath();
+            context.moveTo(i,0);
+            context.lineTo(i,500);
+            context.stroke();
+        }
+    
+        for(var i = 0; i < 500; i += 10) {
+            context.beginPath();
+            context.moveTo(0,i);
+            context.lineTo(500,i);
+            context.stroke();
+        }
+    }
+    
+    function drawRectangle(x,y,larg,long) {
+        context.fillRect(x,y,larg,long)
+    }
+    
+    function drawCurves(bezierPoints) {
+        context.clearRect(0, 0, canvas.width, canvas.height);   
+        context.beginPath();       
+        context.moveTo(25,100);
+        context.bezierCurveTo(
+            bezierPoints.x1,bezierPoints.y1,
+            bezierPoints.x2,bezierPoints.y2,
+            325, 125
+            );
+        context.stroke();
+        drawLine(25,100,bezierPoints.x1,bezierPoints.y1);
+        drawLine(325,125,bezierPoints.x2,bezierPoints.y2);
+        modCurvePoints1 = {x:bezierPoints.x1-2.5,y:bezierPoints.y1-2.5,long:5,larg:5};
+        modCurvePoints2 = {x:bezierPoints.x2-2.5,y:bezierPoints.y2-2.5,long:5,larg:5};
+        drawRectangle(bezierPoints.x1-2.5,bezierPoints.y1-2.5,5,5);
+        drawRectangle(bezierPoints.x2-2.5,bezierPoints.y2-2.5,5,5);
+    }
+    
+    function windowToCanvas(canvas, x, y) {
+        var bbox = canvas.getBoundingClientRect();
+
+        return { x: x - bbox.left * (canvas.width  / bbox.width),
+                y: y - bbox.top  * (canvas.height / bbox.height)
+        };
+    }
+    
+}
+</script>
+
+</body>
+</html>
